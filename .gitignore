@@ -366,5 +366,6 @@ MigrationBackup/
 
 # End of https://www.gitignore.io/api/visualstudio,visualstudiocode
 
-# ignore database file
+# ignore database files
 src/Afsw.Command/store.db
+src/Afsw.Command/Hangfire.db
