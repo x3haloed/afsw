@@ -71,7 +71,6 @@ namespace Afsw.Command
             services.AddHangfireServer();
 
             services.AddTransient<ViewRenderService>();
-            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<HangfireTasks>();
         }
 
