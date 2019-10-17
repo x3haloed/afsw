@@ -56,8 +56,6 @@ namespace Afsw.Command
                 options.Password.RequiredUniqueChars = 0;
             });
 
-            
-
             services.AddMvc();
 
             // Add Hangfire services.

@@ -22,6 +22,7 @@ namespace Afsw.Command.IdentityProvider
             {
                 return IdentityResult.Success;
             }
+
             return IdentityResult.Failed(new IdentityError { Description = $"Could not insert user {user.Email}." });
         }
 
@@ -29,11 +30,22 @@ namespace Afsw.Command.IdentityProvider
         {
             var users = GetUserCollection();
 
+            var storedUser = users.FindOne(u => u.Id == user.Id);
+
+            storedUser.UserName = user.UserName;
+            storedUser.Email = user.Email;
+            storedUser.EmailConfirmed = user.EmailConfirmed;
+            storedUser.PasswordHash = user.PasswordHash;
+            storedUser.NormalizedUserName = user.NormalizedUserName;
+            storedUser.AuthenticationType = user.AuthenticationType;
+            storedUser.IsAuthenticated = user.IsAuthenticated;
+            storedUser.Name = user.Name;
+
             if (users.Update(user))
             {
                 return IdentityResult.Success;
             }
-            return IdentityResult.Failed(new IdentityError { Description = $"Could not delete user {user.Email}." });
+            return IdentityResult.Failed(new IdentityError { Description = $"Could not update user {user.Email}." });
         }
 
         public IdentityResult Delete(Guid userId)
@@ -58,7 +70,7 @@ namespace Afsw.Command.IdentityProvider
         {
             var users = GetUserCollection();
 
-            return users.Find(u => u.UserName == userName).SingleOrDefault();
+            return users.Find(u => u.NormalizedUserName == userName).SingleOrDefault();
         }
 
         private LiteCollection<ApplicationUserStoreEntry> GetUserCollection()

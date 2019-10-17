@@ -8,10 +8,12 @@ namespace Afsw.Command.IdentityProvider
         {
             return new ApplicationUserStoreEntry
             {
+                Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 EmailConfirmed = user.EmailConfirmed,
                 PasswordHash = user.PasswordHash,
+                NormalizedUserName = user.NormalizedUserName,
                 AuthenticationType = user.AuthenticationType,
                 IsAuthenticated = user.IsAuthenticated,
                 Name = user.Name,
@@ -22,6 +24,7 @@ namespace Afsw.Command.IdentityProvider
         {
             return new ApplicationUser
             {
+                Id = storeEntry.Id,
                 UserName = storeEntry.UserName,
                 Email = storeEntry.Email,
                 EmailConfirmed = storeEntry.EmailConfirmed,

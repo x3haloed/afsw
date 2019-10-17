@@ -74,7 +74,7 @@ namespace Afsw.Command.IdentityProvider
 
         public Task<string> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.NormalizedUserName);
         }
 
         public Task<string> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -132,7 +132,8 @@ namespace Afsw.Command.IdentityProvider
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             user.NormalizedUserName = normalizedName ?? throw new ArgumentNullException(nameof(normalizedName));
-            return Task.FromResult<object>(null);
+
+            return Task.FromResult(0);
         }
 
         public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash, CancellationToken cancellationToken = default)

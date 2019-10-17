@@ -1,8 +1,10 @@
 ﻿using Afsw.Command.IdentityProvider;
+using Afsw.Command.Models;
 using Afsw.Command.Services;
 using Afsw.Types;
 using Hangfire;
 using LiteDB;
+using Markdig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +14,7 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Afsw.Command.Controllers
@@ -31,26 +34,29 @@ namespace Afsw.Command.Controllers
             _userManager = userManager;
         }
 
+        private static readonly Regex _slugRegex = new Regex("[^a-zA-Z0-9]");
+
         private readonly ILogger<PostsController> _logger;
         private readonly LiteDatabase _database;
         private readonly UserManager<ApplicationUser> _userManager;
 
         // POST: Posts
         [HttpPost("")]
-        [Consumes(MediaTypeNames.Text.Plain)]
+        [Consumes("application/x-www-form-urlencoded")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        //[ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-
-        // ignore authentication until its fixed
         [AllowAnonymous]
-
-        public async Task<ActionResult> PostAsync()
+        public async Task<ActionResult> PostAsync([FromForm]PostModel postModel)
         {
-            string markdown;
+            var user = await _userManager.FindByNameAsync(postModel.Username);
 
-            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            if (user == null)
             {
-                markdown = await reader.ReadToEndAsync();
+                return new StatusCodeResult(StatusCodes.Status401Unauthorized);
+            }
+
+            if (! await _userManager.CheckPasswordAsync(user, postModel.Password))
+            {
+                return new StatusCodeResult(StatusCodes.Status401Unauthorized);
             }
 
             // Get customer collection
@@ -59,14 +65,12 @@ namespace Afsw.Command.Controllers
             // Create your new customer instance
             var post = new Post
             {
-                Name = "Post Name",
-                Slug = "post-name",
+                Title = postModel.Title,
+                Slug = _slugRegex.Replace(postModel.Title, "-"),
                 PublishedOn = DateTime.UtcNow,
-                Content = markdown,
-                //AuthorId = (await _userManager.GetUserAsync(User)).Id,
-                //AuthorName = User.Identity.Name,
-                AuthorId = new Guid(),
-                AuthorName = "chad",
+                ContentMarkdown = postModel.Content,
+                AuthorId = user.Id,
+                AuthorName = user.Name,
             };
 
             // Insert new customer document(Id will be auto - incremented)

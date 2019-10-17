@@ -9,25 +9,13 @@ namespace Afsw.AdminTool
     {
         static void Main(string[] args)
         {
-            using var db = new LiteDatabase("store.db");
+            using var db = new LiteDatabase(@"C:\Code\Afsw\src\Afsw.Command\store.db");
             var users = db.GetCollection<ApplicationUserStoreEntry>("users");
-            var chad = users.Find(u => u.Name == "chad").Single();
-            if (chad != null)
+            
+            foreach (var u in users.FindAll())
             {
-                users.Delete(chad.Id);
+                Console.WriteLine(u.NormalizedUserName);
             }
-            users.Insert(new ApplicationUserStoreEntry
-            {
-
-                UserName = "chad",
-                Email = "chad@ch.ad",
-                EmailConfirmed = true,
-                PasswordHash = "poopoo",
-                AuthenticationType = "ummm",
-                IsAuthenticated = false,
-                Name = "chad",
-                Roles = new [] { "8e1e72fb-6a2a-4320-8249-77fc00fa24fa" }
-            });
         }
     }
 }

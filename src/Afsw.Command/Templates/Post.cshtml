@@ -4,9 +4,9 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <header><h1>@Model.Name</h1></header>
+    <header><h1>@Model.Title</h1></header>
     <content>
-        @Model.Content
+        @Html.Raw(@Model.ContentHtml)
     </content>
     <footer>@Model.AuthorName - @Model.PublishedOn</footer>
 </body>

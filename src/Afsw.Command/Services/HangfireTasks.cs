@@ -1,8 +1,8 @@
 ﻿using Afsw.Command.Templates.TemplateModels;
 using Afsw.Types;
 using LiteDB;
+using Markdig;
 using System;
-using System.Dynamic;
 using System.IO;
 
 namespace Afsw.Command.Services
@@ -27,11 +27,17 @@ namespace Afsw.Command.Services
                 throw new InvalidOperationException("Cannot find post with ID:" + postId);
             }
 
+            var pipeline = new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .Build();
+
+            string contentHtml = Markdown.ToHtml(post.ContentMarkdown, pipeline);
+
             var templateModel = new PostTemplateModel
             {
                 AuthorName = post.AuthorName,
-                Name = post.Name,
-                Content = post.Content,
+                Title = post.Title,
+                ContentHtml = contentHtml,
             };
 
             string viewWithViewModel = _viewRender.RenderAsync("Templates/Post.cshtml", templateModel).GetAwaiter().GetResult();
