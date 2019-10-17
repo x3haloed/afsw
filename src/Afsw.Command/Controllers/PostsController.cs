@@ -60,6 +60,8 @@ namespace Afsw.Command.Controllers
             var post = new Post
             {
                 Name = "Post Name",
+                Slug = "post-name",
+                PublishedOn = DateTime.UtcNow,
                 Content = markdown,
                 //AuthorId = (await _userManager.GetUserAsync(User)).Id,
                 //AuthorName = User.Identity.Name,

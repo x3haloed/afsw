@@ -37,7 +37,7 @@ namespace Afsw.Command.Services
             string viewWithViewModel = _viewRender.RenderAsync("Templates/Post.cshtml", templateModel).GetAwaiter().GetResult();
 
             //output the post html
-            File.WriteAllText(@"C:\Code\Afsw\src\client-site\postname.html", viewWithViewModel);
+            File.WriteAllText(@$"C:\Code\Afsw\src\client-site\{post.Slug}.html", viewWithViewModel);
         }
 
         public void CompileArchive()
