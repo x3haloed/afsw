@@ -1,13 +1,9 @@
-﻿using System;
-
-namespace Afsw.Types
+﻿namespace Afsw.Command.Templates.TemplateModels
 {
-    public class Post
+    public class PostTemplateModel
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Content { get; set; }
-        public Guid AuthorId { get; set; }
         public string AuthorName { get; set; }
     }
 }

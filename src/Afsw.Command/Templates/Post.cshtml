@@ -1,9 +1,13 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Afsw.Command.Templates.TemplateModels
+@model PostTemplateModel
+
 <!DOCTYPE html>
 <html>
 <body>
-    test
+    <header><h1>@Model.Name</h1></header>
+    <content>
+        @Model.Content
+    </content>
+    <footer>@Model.AuthorName</footer>
 </body>
 </html>

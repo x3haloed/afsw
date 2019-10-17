@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
@@ -62,16 +63,16 @@ namespace Afsw.Command.Controllers
                 Content = markdown,
                 //AuthorId = (await _userManager.GetUserAsync(User)).Id,
                 //AuthorName = User.Identity.Name,
-                AuthorId = new System.Guid(),
+                AuthorId = new Guid(),
                 AuthorName = "chad",
             };
 
             // Insert new customer document(Id will be auto - incremented)
-            posts.Insert(post);
+            Guid newPostId = posts.Insert(post);
 
             _logger.LogInformation("new post added.");
 
-            BackgroundJob.Enqueue<HangfireTasks>(hf => hf.CompilePosts());
+            BackgroundJob.Enqueue<HangfireTasks>(hf => hf.CompilePost(newPostId));
 
             return Accepted("http://localhost/path", post);
         }
