@@ -70,7 +70,7 @@ namespace Afsw.Command.Controllers
                 PublishedOn = DateTime.UtcNow,
                 ContentMarkdown = postModel.Content,
                 AuthorId = user.Id,
-                AuthorName = user.Name,
+                AuthorName = user.UserName,
             };
 
             // Insert new customer document(Id will be auto - incremented)

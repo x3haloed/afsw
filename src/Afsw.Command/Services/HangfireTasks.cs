@@ -38,6 +38,7 @@ namespace Afsw.Command.Services
                 AuthorName = post.AuthorName,
                 Title = post.Title,
                 ContentHtml = contentHtml,
+                PublishedOn = post.PublishedOn,
             };
 
             string viewWithViewModel = _viewRender.RenderAsync("Templates/Post.cshtml", templateModel).GetAwaiter().GetResult();
