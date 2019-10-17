@@ -72,7 +72,8 @@ namespace Afsw.Command.Controllers
 
             _logger.LogInformation("new post added.");
 
-            BackgroundJob.Enqueue<HangfireTasks>(hf => hf.CompilePost(newPostId));
+            string postCompileJobId = BackgroundJob.Enqueue<HangfireTasks>(hf => hf.CompilePost(newPostId));
+            BackgroundJob.ContinueJobWith<HangfireTasks>(postCompileJobId, hf => hf.CompileArchive());
 
             return Accepted("http://localhost/path", post);
         }

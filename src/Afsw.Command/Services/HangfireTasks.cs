@@ -39,5 +39,27 @@ namespace Afsw.Command.Services
             //output the post html
             File.WriteAllText(@"C:\Code\Afsw\src\client-site\postname.html", viewWithViewModel);
         }
+
+        public void CompileArchive()
+        {
+            //var post = _database.GetCollection<Post>("posts").FindById(postId);
+
+            //if (post == null)
+            //{
+            //    throw new InvalidOperationException("Cannot find post with ID:" + postId);
+            //}
+
+            //var templateModel = new PostTemplateModel
+            //{
+            //    AuthorName = post.AuthorName,
+            //    Name = post.Name,
+            //    Content = post.Content,
+            //};
+
+            //string viewWithViewModel = _viewRender.RenderAsync("Templates/Post.cshtml", templateModel).GetAwaiter().GetResult();
+
+            ////output the post html
+            //File.WriteAllText(@"C:\Code\Afsw\src\client-site\postname.html", viewWithViewModel);
+        }
     }
 }
