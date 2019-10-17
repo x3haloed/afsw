@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.LiteDB;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +15,9 @@ namespace Afsw.Command
     {
         public static void Main(string[] args)
         {
+            //GlobalConfiguration.Configuration.UseLiteDbStorage();
+            //new BackgroundJobServer();
+
             CreateHostBuilder(args).Build().Run();
         }
 

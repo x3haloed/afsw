@@ -1,5 +1,7 @@
 ﻿using Afsw.Command.IdentityProvider;
+using Afsw.Command.Services;
 using Afsw.Types;
+using Hangfire;
 using LiteDB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +21,9 @@ namespace Afsw.Command.Controllers
     public class PostsController : ControllerBase
     {
         public PostsController(
-            ILogger<PostsController> logger, LiteDatabase database, UserManager<ApplicationUser> userManager)
+            ILogger<PostsController> logger,
+            LiteDatabase database,
+            UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _database = database;
@@ -66,6 +70,8 @@ namespace Afsw.Command.Controllers
             posts.Insert(post);
 
             _logger.LogInformation("new post added.");
+
+            BackgroundJob.Enqueue<HangfireTasks>(hf => hf.CompilePosts());
 
             return Accepted("http://localhost/path", post);
         }

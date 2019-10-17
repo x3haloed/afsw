@@ -1,51 +1,67 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using System;
-using System.IO;
+using Microsoft.AspNetCore.Routing;
 
 namespace Afsw.Command.Services
 {
     public class ViewRenderService
     {
-        IRazorViewEngine _viewEngine;
-        IHttpContextAccessor _httpContextAccessor;
+        private readonly IRazorViewEngine _razorViewEngine;
+        private readonly ITempDataProvider _tempDataProvider;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ViewRenderService(IRazorViewEngine viewEngine, IHttpContextAccessor httpContextAccessor)
+        public ViewRenderService(IRazorViewEngine razorViewEngine,
+            ITempDataProvider tempDataProvider,
+            IServiceProvider serviceProvider)
         {
-            _viewEngine = viewEngine;
-            _httpContextAccessor = httpContextAccessor;
+            _razorViewEngine = razorViewEngine;
+            _tempDataProvider = tempDataProvider;
+            _serviceProvider = serviceProvider;
         }
 
-        public string Render(string viewPath)
+        public async Task<string> RenderAsync(string viewPath)
         {
-            return Render(viewPath, string.Empty);
+            return await RenderAsync(viewPath, string.Empty);
         }
 
-        public string Render<TModel>(string viewPath, TModel model)
+        public async Task<string> RenderAsync(string viewPath, object model)
         {
-            var viewEngineResult = _viewEngine.GetView("~/", viewPath, false);
+            var httpContext = new DefaultHttpContext { RequestServices = _serviceProvider };
+            var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
 
-            if (!viewEngineResult.Success)
+            using (var sw = new StringWriter())
             {
-                throw new InvalidOperationException($"Couldn't find view {viewPath}");
-            }
+                var viewResult = _razorViewEngine.GetView("~/", viewPath, false);
 
-            var view = viewEngineResult.View;
+                if (viewResult.View == null)
+                {
+                    throw new ArgumentNullException($"{viewPath} does not match any available view");
+                }
 
-            using (var output = new StringWriter())
-            {
-                var viewContext = new ViewContext();
-                viewContext.HttpContext = _httpContextAccessor.HttpContext;
-                viewContext.ViewData = new ViewDataDictionary<TModel>(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                { Model = model };
-                viewContext.Writer = output;
+                var viewDictionary = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = model
+                };
 
-                view.RenderAsync(viewContext).GetAwaiter().GetResult();
+                var viewContext = new ViewContext(
+                    actionContext,
+                    viewResult.View,
+                    viewDictionary,
+                    new TempDataDictionary(actionContext.HttpContext, _tempDataProvider),
+                    sw,
+                    new HtmlHelperOptions()
+                );
 
-                return output.ToString();
+                await viewResult.View.RenderAsync(viewContext);
+                return sw.ToString();
             }
         }
     }

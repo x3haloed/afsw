@@ -14,12 +14,13 @@ namespace Afsw.Command.Services
         public void CompilePosts()
         {
             //ViewModel is of type dynamic - just for testing
-            dynamic x = new ExpandoObject();
-            x.Test = "Yes";
-            string viewWithViewModel = _viewRender.Render("Templates/Post.cshtml", x);
+            //dynamic x = new ExpandoObject();
+            //x.Test = "Yes";
+            //string viewWithViewModel = _viewRender.RenderAsync("Templates/Post.cshtml", x).GetAwaiter().GetResult();
+            string viewWithoutViewModel = _viewRender.RenderAsync("Templates/Post.cshtml").GetAwaiter().GetResult();
 
             //output the post html
-            File.WriteAllText(@"C:\Code\Afsw\src\client-site\postname.html", viewWithViewModel);
+            File.WriteAllText(@"C:\Code\Afsw\src\client-site\postname.html", viewWithoutViewModel);
         }
     }
 }

@@ -60,22 +60,28 @@ namespace Afsw.Command
 
             services.AddMvc();
 
-            services.AddSingleton<ViewRenderService>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<HangfireTasks>();
+            // Add Hangfire services.
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseLiteDbStorage());
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
+
+            services.AddTransient<ViewRenderService>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<HangfireTasks>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // this should be moved somewhere else
-            GlobalConfiguration.Configuration.UseLiteDbStorage();
-            new BackgroundJobServer();
-            RecurringJob.AddOrUpdate(() => app.ApplicationServices.GetService<HangfireTasks>().CompilePosts(), Cron.Minutely);
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseHangfireDashboard();
             }
 
             app.UseHttpsRedirection();
